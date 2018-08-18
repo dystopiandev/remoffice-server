@@ -1,0 +1,22 @@
+{
+  "name": "remoffice-server",
+  "version": "1.0.0",
+  "description": "Remoffice Server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "seed-db": "node db/seeds/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "r3dh4r7",
+  "license": "MIT",
+  "dependencies": {
+    "bossa": "0.0.7",
+    "chalk": "^2.4.1",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "require-dir": "^1.0.0",
+    "socket.io": "^2.1.1",
+    "sqlite": "^2.9.2"
+  }
+}
