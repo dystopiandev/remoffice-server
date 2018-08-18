@@ -10,7 +10,7 @@ module.exports = {
 
   // Blackbox config
   blackbox: {
-    driver:  '', // leave empty for emulation
+    driver:  'raspberry-pi-3', // leave empty for emulation
     location: 'Computer Laboratory',
     exposeToClients: true
   },

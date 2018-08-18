@@ -49,7 +49,7 @@ class Blackbox {
     let instance = this
 
     return new Promise((resolve) => {
-      resolve('Blackbox ready (' + instance.name + ')')
+      resolve('Prototype blackbox ready...')
     })
   }
 
