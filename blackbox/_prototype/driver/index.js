@@ -9,10 +9,8 @@ const ipAddresses = require('../../../lib/ipAddresses')
 const serverVersion = require('../../../lib/serverVersion')
 
 class Blackbox {
-  constructor () {}
-
-  get runtimeData () {
-    return {
+  constructor () {
+    this.runtimeData = {
       ipAddresses: ipAddresses.toArray(),
       blackbox: appConfig.blackbox.exposeToClients ? {
         status: 'running',
@@ -22,7 +20,7 @@ class Blackbox {
       server: {
         name: appConfig.name,
         version: serverVersion,
-        clientCount: Object.keys(clients).length
+        clientCount: 0
       },
       servlets: {
         storage: {
@@ -31,6 +29,7 @@ class Blackbox {
       }
     }
   }
+
 
   get db () {
     return db
@@ -53,14 +52,10 @@ class Blackbox {
     })
   }
 
-  dispatchActions (clientId) {
+  dispatchActions (clientSocket) {
     let instance = this
-    let client = clients[clientId]
-
-    // broadcast server data to client
-    setInterval(() => {
-      client.emit('serverData', instance.runtimeData)
-    }, 500)
+    const user = clientSocket.client.user
+    const userTag = user.firstName + ' ' + user.lastName + ' #' + user.id
   }
 
   set (obj) {

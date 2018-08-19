@@ -3,7 +3,6 @@ const Blackbox = require('../../_prototype/driver')
 const appConfig = require('../../../config')
 const db = require('../../../lib/db')
 const server = require('../../../lib/server')
-const clients = require('../../../lib/clients')
 const notify = require('../../../lib/notify')
 const log = require('../../../lib/log')
 const ipAddresses = require('../../../lib/ipAddresses')
@@ -13,10 +12,7 @@ class RaspberryPi3 extends Blackbox {
   constructor () {
     super()
     this.processes = {}
-  }
-
-  get runtimeData () {
-    return {
+    this.runtimeData = {
       ipAddresses: ipAddresses.toArray(),
       blackbox: appConfig.blackbox.exposeToClients ? {
         status: 'running',
@@ -26,7 +22,7 @@ class RaspberryPi3 extends Blackbox {
       server: {
         name: appConfig.name,
         version: serverVersion,
-        clientCount: Object.keys(clients).length
+        clientCount: 0
       },
       servlets: {
         storage: {
@@ -94,73 +90,65 @@ class RaspberryPi3 extends Blackbox {
     })
   }
 
-  dispatchActions (clientId) {
+  dispatchActions (clientSocket) {
     let instance = this
-    let client = clients[clientId]
-
-    // broadcast server data to client
-    setInterval(() => {
-      client.emit('serverData', instance.runtimeData)
-    }, 500)
+    const user = clientSocket.client.user
+    const userTag = user.firstName + ' ' + user.lastName + ' #' + user.id
 
     // feed this client
     db.fetchRooms()
-      .then((rooms) => client.emit('rooms', rooms))
+      .then((rooms) => clientSocket.emit('rooms', rooms))
       .catch((err) => log.error(err))
     db.fetchMasterSwitches()
-      .then((masterSwitches) => client.emit('masterSwitches', masterSwitches))
+      .then((masterSwitches) => clientSocket.emit('masterSwitches', masterSwitches))
       .catch((err) => log.error(err))
     db.fetchSwitches()
-      .then((switches) => client.emit('switches', switches))
+      .then((switches) => clientSocket.emit('switches', switches))
     db.fetchCams()
-      .then((cams) => client.emit('cams', cams))
+      .then((cams) => clientSocket.emit('cams', cams))
       .catch((err) => log.error(err))
 
-    client.on('disconnect', () => {
-      log.warning('[' + client.handshake.address + ']', '>', 'Client #' + clientId, 'left.')
-      delete clients[clientId]  // untrack client
-    })
-
-    client.on('getServerData', () => {
-      log.info('[Client #' + clientId + ']', '>', 'Request: Server Data')
+    clientSocket.on('getServerData', () => {
+      log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Request: Server Data')
       server.emit('serverData', runtimeData)
     })
 
-    client.on('getRooms', () => {
-      log.info('[Client #' + clientId + ']', '>', 'Request: Rooms')
+    clientSocket.on('getRooms', () => {
+      log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Request: Rooms')
       db.fetchRooms()
-        .then((rooms) => client.emit('rooms', rooms))
+        .then((rooms) => clientSocket.emit('rooms', rooms))
         .catch((err) => log.error(err))
     })
 
-    client.on('getCams', () => {
-      log.info('[Client #' + clientId + ']', '>', 'Request: Cameras')
+    clientSocket.on('getCams', () => {
+      log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Request: Cameras')
       db.fetchCams()
-        .then((cams) => client.emit('cams', cams))
+        .then((cams) => clientSocket.emit('cams', cams))
         .catch((err) => log.error(err))
     })
 
-    client.on('getSwitches', () => {
-      log.info('[Client #' + clientId + ']', '>', 'Request: Switches')
+    clientSocket.on('getSwitches', () => {
+      log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Request: Switches')
       db.fetchSwitches()
-        .then((switches) => client.emit('switches', switches))
+        .then((switches) => clientSocket.emit('switches', switches))
         .catch((err) => log.error(err))
     })
   
-    client.on('getMasterSwitches', () => {
-      log.info('[Client #' + clientId + ']', '>', 'Request: Master Switches')
+    clientSocket.on('getMasterSwitches', () => {
+      log.info('[User #' + clientSocket.id + ']', '>', 'Request: Master Switches')
       db.fetchMasterSwitches()
-        .then((masterSwitches) => client.emit('masterSwitches', masterSwitches))
+        .then((masterSwitches) => clientSocket.emit('masterSwitches', masterSwitches))
         .catch((err) => log.error(err))
     })
   
-    client.on('toggleSwitch', (dataNode) => {
+    clientSocket.on('toggleSwitch', (dataNode) => {
       const stateText = dataNode.state ? 'ON' : 'OFF'
+
       db.updateSwitch(dataNode.id, dataNode.state ? 1 : 0)
         .then(() => {
           instance.setSwitch(dataNode)
-          log.info('[Client #' + clientId + ']', '>', 'Toggle Switch', '#' + dataNode.id, stateText)
-          notify.info(server, 'Blackbox Dispatch', 'Switch #' + dataNode.id + ' toggled ' + stateText + '!', 3000)
+          log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Toggle Switch', '#' + dataNode.id, stateText)
+          notify.info(server, userTag, 'Toggled ' + stateText + ' Switch #' + dataNode.id, 3000)
           db.fetchSwitches()
             .then((switches) => server.emit('switches', switches))
             .catch((err) => log.error(err))
@@ -168,31 +156,39 @@ class RaspberryPi3 extends Blackbox {
         .catch((err) => log.error(err))
     })
   
-    client.on('toggleMasterSwitch', (dataNode) => {
+    clientSocket.on('toggleMasterSwitch', (dataNode) => {
       const stateText = dataNode.state ? 'ON' : 'OFF'
-      db.updateMasterSwitch(dataNode.id, dataNode.state ? 1 : 0)
-        .then(() => {
-          instance.setMasterSwitch(dataNode)
-          log.info('[Client #' + clientId + ']', '>', dataNode.title, stateText)
-          notify.info(server, 'Blackbox Dispatch', dataNode.title + ' toggled ' + stateText + '!', 3000)
-          db.fetchMasterSwitches()
-            .then((masterSwitches) => server.emit('masterSwitches', masterSwitches))
-            .catch((err) => log.error(err))
-        })
+
+      if (user.privilege >= 1) {
+        db.updateMasterSwitch(dataNode.id, dataNode.state ? 1 : 0)
+          .then(() => {
+            instance.setMasterSwitch(dataNode)
+            log.info('[User #' + clientSocket.client.user.id + ']', '>', dataNode.title, stateText)
+            notify.info(server, userTag, 'Toggled ' + stateText + ' ' + dataNode.title, 3000)
+            db.fetchMasterSwitches()
+              .then((masterSwitches) => server.emit('masterSwitches', masterSwitches))
+              .catch((err) => log.error(err))
+          })
+      } else {
+        db.fetchMasterSwitches()
+          .then((masterSwitches) => clientSocket.emit('masterSwitches', masterSwitches))
+          .catch((err) => log.error(err))
+        notify.error(clientSocket, 'Server Guard', 'You need elevated privileges to toggle Master Switches', 3000)
+      }
     })
   
-    client.on('rebootBlackbox', (delay) => {
+    clientSocket.on('rebootBlackbox', (delay) => {
       runtimeData.blackbox.status = 'rebooting'  // set blackbox runtime status
-      log.info('[Client #' + clientId + ']', '>', 'Rebooting Blackbox', (delay == 'now') ? 'immediately...' : 'in ' + delay + 's...')
+      log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Rebooting Blackbox', (delay == 'now') ? 'immediately...' : 'in ' + delay + 's...')
       notify.warning(server, 'Server Event', 'Rebooting...', 0)
       instance.reboot(delay)
         .then()
         .catch((err) => log.error(err))
     })
   
-    client.on('shutdownBlackbox', (delay) => {
+    clientSocket.on('shutdownBlackbox', (delay) => {
       runtimeData.blackbox.status = 'stopped'  // set blackbox runtime status
-      log.info('[Client #' + clientId + ']', '>', 'Shutting down', (delay == 'now') ? 'immediately...' : 'in ' + delay + 's...')
+      log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Shutting down', (delay == 'now') ? 'immediately...' : 'in ' + delay + 's...')
       notify.red(server, 'Server Shutdown', 'To re-establish connection, you have to manually restart the blackbox.', 0)
       instance.shutdown(delay)
         .then()
