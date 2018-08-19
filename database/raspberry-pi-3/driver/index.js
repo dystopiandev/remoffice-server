@@ -27,6 +27,14 @@ class Database {
 
   // Fetches
 
+  fetchUserByEmail (email) {
+    return new Promise((resolve, reject) => {
+      this.db.get('SELECT * FROM User WHERE email=?', email)
+      .then((data) => resolve(data))
+      .catch((err) => reject(err))
+    })
+  }
+
   fetchMasterSwitches () {
     return new Promise((resolve, reject) => {
       this.db.all('SELECT * FROM MasterSwitch')
@@ -62,20 +70,16 @@ class Database {
   // Updates
 
   updateSwitch (id, state) {
-    let instance = this
-    
     return new Promise((resolve, reject) => {
-      instance.db.run('UPDATE Switch SET state=? WHERE id=?', [state, id])
+      this.db.run('UPDATE Switch SET state=? WHERE id=?', [state, id])
       .then((data) => resolve(data))
       .catch((err) => reject(err))
     })
   }
 
   updateMasterSwitch (id, state) {
-    let instance = this
-    
     return new Promise((resolve, reject) => {
-      instance.db.run('UPDATE MasterSwitch SET state=? WHERE id=?', [state, id])
+      this.db.run('UPDATE MasterSwitch SET state=? WHERE id=?', [state, id])
       .then((data) => resolve(data))
       .catch((err) => reject(err))
     })

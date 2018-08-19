@@ -2,6 +2,13 @@ module.exports = {
   // Server name
   name: 'Remoffice Server',
 
+  // Session config
+  sessions: {
+    key: 'A Secret 4lph4num3r1c String',
+    authTimeout: 10000, // seconds to wait for client to authenticate
+    expiry: 86440 // token life in seconds
+  },
+
   // Server verbosity
   enableLogs: true,
 
@@ -30,5 +37,7 @@ module.exports = {
   storage: {
     host: '0.0.0.0',
     port: '8089'
-  }
+  },
+
+
 }

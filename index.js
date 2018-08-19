@@ -26,7 +26,7 @@ blackbox.db.connect()
 
         // event watch: socket connection established
         server.on('connection', (client) => {
-          const clientId = makeId(5) // make client ID
+          const clientId = makeId(15) // make client ID
           clients[clientId] = client // track client
 
           // announce new client
