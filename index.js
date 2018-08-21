@@ -46,7 +46,7 @@ blackbox.db.connect()
             const userTag = user.firstName + ' ' + user.lastName + ' #' + user.id
 
             // announce new client
-            log.success('[' + clientSocket.handshake.address + ']', '>', 'Authentication success! Client ID: #' + clientSocket.id)
+            log.success('[' + clientSocket.handshake.address + ']', '>', 'User #' + user.id + ' logged in!')
 
             // introduce the new guy to all online users
             notify.info(server, userTag, 'Connected', 3000)
@@ -64,14 +64,14 @@ blackbox.db.connect()
           },
           // catch all disconnections
           disconnect: (clientSocket) => {
-            const user = clientSocket.client.user
-            const userTag = user.firstName + ' ' + user.lastName + ' #' + user.id
-
             // detect disconnections due to auth timeout
             if (!clientSocket.auth) {
-              log.warning('[' + clientSocket.handshake.address + ']', '>', 'Authentication timeout.')
+              log.warning('[' + clientSocket.handshake.address + ']', '>', 'Authentication failed.')
             } else {
-              log.warning('[' + clientSocket.handshake.address + ']', '>', 'User #' + clientSocket.client.user.id, 'left.')
+              const user = clientSocket.client.user
+              const userTag = user.firstName + ' ' + user.lastName + ' #' + user.id
+
+              log.warning('[' + clientSocket.handshake.address + ']', '>', 'User #' + user.id, 'left.')
 
               // wave goodbye to all online users
               notify.info(server, userTag, 'Disconnected', 3000)

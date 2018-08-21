@@ -71,7 +71,7 @@ class RaspberryPi3 extends Blackbox {
     let instance = this
 
     return new Promise((resolve) => {
-      db.fetchSwitches()
+      db.fetchAllSwitches()
         .then((switches) => {
           for (let i = 0; i < switches.length; i++) {
             instance.setSwitch(switches[i])
@@ -95,65 +95,79 @@ class RaspberryPi3 extends Blackbox {
     const user = clientSocket.client.user
     const userTag = user.firstName + ' ' + user.lastName + ' #' + user.id
 
-    // feed this client
-    db.fetchRooms()
-      .then((rooms) => clientSocket.emit('rooms', rooms))
-      .catch((err) => log.error(err))
-    db.fetchMasterSwitches()
-      .then((masterSwitches) => clientSocket.emit('masterSwitches', masterSwitches))
-      .catch((err) => log.error(err))
-    db.fetchSwitches()
-      .then((switches) => clientSocket.emit('switches', switches))
-    db.fetchCams()
-      .then((cams) => clientSocket.emit('cams', cams))
-      .catch((err) => log.error(err))
+    // feed this client initially
+    clientSocket.emit('updateRooms')
+    clientSocket.emit('updateMasterSwitches')
+    clientSocket.emit('updateSwitches')
+    clientSocket.emit('updateCams')
 
     clientSocket.on('getServerData', () => {
-      log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Request: Server Data')
       server.emit('serverData', runtimeData)
     })
 
     clientSocket.on('getRooms', () => {
-      log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Request: Rooms')
       db.fetchRooms()
         .then((rooms) => clientSocket.emit('rooms', rooms))
         .catch((err) => log.error(err))
     })
 
     clientSocket.on('getCams', () => {
-      log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Request: Cameras')
       db.fetchCams()
         .then((cams) => clientSocket.emit('cams', cams))
         .catch((err) => log.error(err))
     })
 
     clientSocket.on('getSwitches', () => {
-      log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Request: Switches')
-      db.fetchSwitches()
-        .then((switches) => clientSocket.emit('switches', switches))
-        .catch((err) => log.error(err))
+      if (user.privilege >= 1) {
+        db.fetchAllSwitches()
+          .then((switches) => clientSocket.emit('switches', switches))
+          .catch((err) => log.error(err))
+      } else {
+        db.fetchSwitches(user.Room_id)
+          .then((switches) => clientSocket.emit('switches', switches))
+          .catch((err) => log.error(err))
+      }
     })
   
     clientSocket.on('getMasterSwitches', () => {
-      log.info('[User #' + clientSocket.id + ']', '>', 'Request: Master Switches')
       db.fetchMasterSwitches()
         .then((masterSwitches) => clientSocket.emit('masterSwitches', masterSwitches))
         .catch((err) => log.error(err))
     })
+
+    // mutations
   
     clientSocket.on('toggleSwitch', (dataNode) => {
-      const stateText = dataNode.state ? 'ON' : 'OFF'
+      const user = clientSocket.client.user
 
-      db.updateSwitch(dataNode.id, dataNode.state ? 1 : 0)
-        .then(() => {
-          instance.setSwitch(dataNode)
-          log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Toggle Switch', '#' + dataNode.id, stateText)
-          notify.info(server, userTag, 'Toggled ' + stateText + ' Switch #' + dataNode.id, 3000)
-          db.fetchSwitches()
-            .then((switches) => server.emit('switches', switches))
+      db.fetchSwitchRoomId(dataNode.id)
+        .then((roomId) => {
+          db.userBelongsToRoom(user.id, roomId)
+            .then((indeed) => {
+              if (indeed) {
+                const stateText = dataNode.state ? 'ON' : 'OFF'
+        
+                db.updateSwitch(dataNode.id, dataNode.state ? 1 : 0)
+                  .then(() => {
+                    // update the switch
+                    instance.setSwitch(dataNode)
+                    // log to console if turned on
+                    log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Toggle Switch', '#' + dataNode.id, stateText)
+                    // broadcast event to all connected clients except self
+                    notify.info(clientSocket.broadcast, userTag, 'Toggled ' + stateText + ' Switch #' + dataNode.id, 3000)
+                    // command all clients to refresh switches
+                    server.emit('updateSwitches')
+                  })
+                  .catch((err) => log.error(err))
+              } else {
+                db.fetchSwitches(user.Room_id)
+                  .then((switches) => clientSocket.emit('switches', switches))
+                  .catch((err) => log.error(err))
+                notify.error(clientSocket, 'Server Guard', 'Infrastructure does not belong in your room!', 3000)
+              }
+            })
             .catch((err) => log.error(err))
         })
-        .catch((err) => log.error(err))
     })
   
     clientSocket.on('toggleMasterSwitch', (dataNode) => {
@@ -162,12 +176,14 @@ class RaspberryPi3 extends Blackbox {
       if (user.privilege >= 1) {
         db.updateMasterSwitch(dataNode.id, dataNode.state ? 1 : 0)
           .then(() => {
+            // update the master switch
             instance.setMasterSwitch(dataNode)
+            // log to console if turned on
             log.info('[User #' + clientSocket.client.user.id + ']', '>', dataNode.title, stateText)
-            notify.info(server, userTag, 'Toggled ' + stateText + ' ' + dataNode.title, 3000)
-            db.fetchMasterSwitches()
-              .then((masterSwitches) => server.emit('masterSwitches', masterSwitches))
-              .catch((err) => log.error(err))
+            // broadcast event to all connected clients except self
+            notify.info(clientSocket.broadcast, userTag, 'Toggled ' + stateText + ' ' + dataNode.title, 3000)
+            // command all clients to update master switches
+            server.emit('updateMasterSwitches')
           })
       } else {
         db.fetchMasterSwitches()
@@ -200,23 +216,23 @@ class RaspberryPi3 extends Blackbox {
     let instance = this
 
     switch (ms.name) {
-      case 'storageServer':
+      case 'blackboxStorage':
         switch (ms.state ? 1 : 0) {
           case 0:
-            if (typeof this.processes.storageServer !== 'undefined') {
-              exec('sudo rkill ' + this.processes.storageServer.pid)
+            if (typeof this.processes.blackboxStorage !== 'undefined') {
+              exec('sudo rkill ' + this.processes.blackboxStorage.pid)
               log.warning('[' + instance.metadata['Name'] + ']', '>', 'Storage server stopped.')
             }
             break
 
           case 1:
             const cmd = 'sudo node node_modules/bossa/index.js -l ' + appConfig.storage.host + ' -p ' + appConfig.storage.port + ' blackbox/' + appConfig.blackbox.driver + '/storage/'
-            this.processes.storageServer = exec(cmd)
-            this.processes.storageServer.stdout.on('data', () => {
+            this.processes.blackboxStorage = exec(cmd)
+            this.processes.blackboxStorage.stdout.on('data', () => {
               log.success('[' + instance.metadata['Name'] + ']', '>', 'Storage server listening on port', appConfig.storage.port)
             })
-            this.processes.storageServer.on('exit', () => {
-              delete this.processes.storageServer
+            this.processes.blackboxStorage.on('exit', () => {
+              delete this.processes.blackboxStorage
             })
             break
         }

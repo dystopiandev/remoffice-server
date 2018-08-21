@@ -51,9 +51,17 @@ class Database {
     })
   }
 
-  fetchSwitches () {
+  fetchAllSwitches () {
     return new Promise((resolve, reject) => {
       this.db.all('SELECT * FROM Switch')
+        .then((data) => resolve(data))
+        .catch((err) => reject(err))
+    })
+  }
+
+  fetchSwitches (roomId) {
+    return new Promise((resolve, reject) => {
+      this.db.all('SELECT * FROM Switch WHERE Room_id=?', roomId)
         .then((data) => resolve(data))
         .catch((err) => reject(err))
     })
@@ -62,6 +70,23 @@ class Database {
   fetchCams () {
     return new Promise((resolve, reject) => {
       this.db.all('SELECT * FROM Cam')
+        .then((data) => resolve(data))
+        .catch((err) => reject(err))
+    })
+  }
+
+  fetchSwitchRoomId (id) {
+    return new Promise((resolve, reject) => {
+      this.db.get('SELECT Room_id FROM Switch WHERE id=?', id)
+        .then((data) => resolve(data.Room_id))
+        .catch((err) => reject(err))
+    })
+  }
+
+  // Queries
+  userBelongsToRoom (userId, roomId) {
+    return new Promise((resolve, reject) => {
+      this.db.get('SELECT id FROM User WHERE id=? AND Room_id=?', [userId, roomId])
         .then((data) => resolve(data))
         .catch((err) => reject(err))
     })
