@@ -246,7 +246,7 @@ class RaspberryPi3 extends Blackbox {
   }
 
   async setSwitch (s) {
-    wire.write([s.id, s.state], function (err) {
+    wire.writeBytes(s.state, [s.id], function (err) {
       if (err) log.error(err)
     })
   }

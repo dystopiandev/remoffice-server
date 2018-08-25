@@ -44,7 +44,20 @@
 
     - Default password is ```raspberry```
 
- 6. Configure autostart on boot for Remoffice Server by appending script to ```~/.bashrc```:
+ 5. Setup relay switching support:
+
+        sudo nano /etc/modules
+
+    - Add the following lines:
+
+          i2c-bcm2708 
+          i2c-dev
+
+    - Make device writable:
+
+          sudo chmod o+rw /dev/i2c*
+
+ 7. Configure autostart on boot for Remoffice Server by appending script to ```~/.bashrc```:
  
         nano ~/.bashrc
 
@@ -52,18 +65,18 @@
   >       clear && cd remoffice-server && node index.js &
   >     fi
 
- 7. Install Node v8:
+ 8. Install Node v8:
     
         curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
         
         sudo apt install -y nodejs
 
- 8. Setup blackbox-specific tools:
+ 9. Setup blackbox-specific tools:
      
          # install pslist package because we need rkill
          sudo apt install pslist
      
- 9. Build and attach Remoffice Client:
+ 10. Build and attach Remoffice Client:
      
      (Skip this step if you want to run in server-only mode. You must build and use external [Remoffice Client](https://github.com/r3dh4r7/remoffice-client) instance(s) to interact with the server.)
      
@@ -85,7 +98,7 @@
          # exit Remoffice Client root
          cd ../
 
- 10. Fetch and bootstrap Remoffice Server:
+ 11. Fetch and bootstrap Remoffice Server:
      
          # grab the latest version of Remoffice Server
          git clone https://github.com/r3dh4r7/remoffice-server
@@ -96,7 +109,7 @@
          # install dependencies
          npm install
 
- 11. Restart OS:
+ 12. Restart OS:
      
          sudo shutdown -r now
 
