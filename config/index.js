@@ -21,6 +21,12 @@ module.exports = {
     location: 'Computer Laboratory',
     exposeToClients: true
   },
+
+  // Switch controller config
+  switchController: {
+    address:  0x8, // I2C bus address
+    device: '/dev/i2c-1'
+  },
   
   // Web socket interface
   socket: {

@@ -1,6 +1,8 @@
-const exec = require('child_process').exec
-const Blackbox = require('../../_prototype/driver')
 const appConfig = require('../../../config')
+const exec = require('child_process').exec
+const i2c = require('i2c')
+const wire = new i2c(appConfig.switchController.address, {device: appConfig.switchController.device})
+const Blackbox = require('../../_prototype/driver')
 const db = require('../../../lib/db')
 const server = require('../../../lib/server')
 const notify = require('../../../lib/notify')
@@ -102,7 +104,7 @@ class RaspberryPi3 extends Blackbox {
     clientSocket.emit('updateCams')
 
     clientSocket.on('getServerData', () => {
-      server.emit('serverData', runtimeData)
+      server.emit('serverData', instance.runtimeData)
     })
 
     clientSocket.on('getRooms', () => {
@@ -144,7 +146,7 @@ class RaspberryPi3 extends Blackbox {
         .then((roomId) => {
           db.userBelongsToRoom(user.id, roomId)
             .then((indeed) => {
-              if (indeed) {
+              if (indeed || user.privilege >= 1) {
                 const stateText = dataNode.state ? 'ON' : 'OFF'
         
                 db.updateSwitch(dataNode.id, dataNode.state ? 1 : 0)
@@ -194,7 +196,7 @@ class RaspberryPi3 extends Blackbox {
     })
   
     clientSocket.on('rebootBlackbox', (delay) => {
-      runtimeData.blackbox.status = 'rebooting'  // set blackbox runtime status
+      instance.runtimeData.blackbox.status = 'rebooting'  // set blackbox runtime status
       log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Rebooting Blackbox', (delay == 'now') ? 'immediately...' : 'in ' + delay + 's...')
       notify.warning(server, 'Server Event', 'Rebooting...', 0)
       instance.reboot(delay)
@@ -203,7 +205,7 @@ class RaspberryPi3 extends Blackbox {
     })
   
     clientSocket.on('shutdownBlackbox', (delay) => {
-      runtimeData.blackbox.status = 'stopped'  // set blackbox runtime status
+      instance.runtimeData.blackbox.status = 'stopped'  // set blackbox runtime status
       log.info('[User #' + clientSocket.client.user.id + ']', '>', 'Shutting down', (delay == 'now') ? 'immediately...' : 'in ' + delay + 's...')
       notify.red(server, 'Server Shutdown', 'To re-establish connection, you have to manually restart the blackbox.', 0)
       instance.shutdown(delay)
@@ -244,7 +246,9 @@ class RaspberryPi3 extends Blackbox {
   }
 
   async setSwitch (s) {
-
+    wire.write([s.id, s.state], function (err) {
+      if (err) log.error(err)
+    })
   }
 
 }

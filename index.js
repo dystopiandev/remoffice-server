@@ -101,8 +101,8 @@ blackbox.db.connect()
 // handle other exceptions
 process.on('uncaughtException', function(err) {
   if(err.errno === 'EADDRINUSE')
-    log.error('FATAL ERROR:', 'The configured port is in-use by another process.', '\n')
+    log.error('\n', 'FATAL ERROR:', 'The configured port is in-use by another process.', '\n')
   else
-    log.error('FATAL ERROR:', err, '\n')
+    log.error('\n', 'FATAL ERROR:', err, '\n')
   process.exit(0)
 })
