@@ -25,7 +25,7 @@ blackbox.db.connect()
 
         // socket auth middleware
         const socketauth = require('socketio-auth')(server, {
-          // try authenticating client
+          // try authenticating client...
           authenticate: function(clientSocket, data, callback) {
             if (data.token !== null) {
               jwt.verify(data.token, appConfig.sessions.key, function (err, decoded) {
@@ -48,13 +48,13 @@ blackbox.db.connect()
             // announce new client
             log.success('[' + clientSocket.handshake.address + ']', '>', 'User #' + user.id + ' logged in!')
 
-            // introduce the new guy to all online users
+            // introduce the new guy to all online users (^_^)
             notify.info(server, userTag, 'Connected', 3000)
 
             // increase client count
             blackbox.runtimeData.server.clientCount++
 
-            // broadcast server data to client
+            // broadcast server data to client at regular intervals
             setInterval(() => {
               clientSocket.emit('serverData', blackbox.runtimeData)
             }, 500)
@@ -62,9 +62,9 @@ blackbox.db.connect()
             // fire away
             blackbox.dispatchActions(clientSocket)
           },
-          // catch all disconnections
+          // listen for disconnections...
           disconnect: (clientSocket) => {
-            // detect disconnections due to auth timeout
+            // detect disconnections due to auth timeout (-_-)
             if (!clientSocket.auth) {
               log.warning('[' + clientSocket.handshake.address + ']', '>', 'Authentication failed.')
             } else {
@@ -80,6 +80,7 @@ blackbox.db.connect()
             // decrease client count
             blackbox.runtimeData.server.clientCount--
           },
+          // set auth timeout
           timeout: appConfig.sessions.authTimeout
         })
 
@@ -88,7 +89,7 @@ blackbox.db.connect()
           log.info('[' + clientSocket.handshake.address + ']', '>', 'New authentication attempt...')
         })
       })
-      // if blackbox couldn't start (I hope not) for some reason
+      // if blackbox couldn't start (I hope not)...
       .catch((bbError) => {
         log.error(bootStatus(), bbError, '\n')
       })
@@ -104,5 +105,6 @@ process.on('uncaughtException', function(err) {
     log.error('\n', 'FATAL ERROR:', 'The configured port is in-use by another process.', '\n')
   else
     log.error('\n', 'FATAL ERROR:', err, '\n')
-  process.exit(0)
+
+  process.exit(0) // pls stahp (T_T)
 })
