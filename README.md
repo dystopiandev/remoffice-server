@@ -6,85 +6,63 @@
 
 ### Preparing the server (Raspberry Pi 3 procedure)
 
- 1. Write Raspbian Stretch image to boot medium. Edit config.txt if necessary, then boot.
+ 1. Write Raspbian Stretch image to boot medium, create an empty file called ```ssh``` in the boot partition. Also, if you're to use Wi-Fi, create a file called ```wpa_supplicant.conf``` in the same directory with the following content:
 
- 2. Launch Pi config tool:
+		country=US
+		ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+		update_config=1
+
+		network={
+			ssid="YOUR WIFI SSID"
+			scan_ssid=1 psk="YOUR WIFI PASSWORD"
+			key_mgmt=WPA-PSK
+		}
+
+ 2. Launch a terminal instance and SSH into the Pi:
+		
+		ssh pi@raspberrypi
+
+    - Default password is ```raspberry```
+    - ```raspberrypi``` should be replaced with the real IP address if you can extract it from your router or ```ip addr``` command if the Pi is plugged into a monitor.
+
+ 3. Launch Pi config tool:
 
         sudo raspi-config
 
     - Boot Options > Desktop/CLI > Console Autologin
 
-    - Boot Options > Wait for Network at Boot > Yes
+    - Interfacing Options > I2C > Yes
 
-    - Interfacing Options > SSH > Yes
+    - (OPTIONAL) > Boot Options > Wait for Network at Boot > Yes
 
-    - OPTIONAL (If your local network is WiFi):
-      
-      Network Options > Wi-Fi, then supply Wi-Fi credentials
+    - OPTIONAL (If you want to access the server by hostname as well as IP) > Network Options > Hostname -> ```remoffice```
           
-    - Finish (exit config tool), then reboot
+    - Finish (exit config tool), reboot, then SSH into the Pi again.
 
-  3. OPTIONAL (If you want to access the server by hostname as well as IP)
+ 4. You may need to get a fresh mirror from [here](https://www.raspbian.org/RaspbianMirrors), then replace the default mirror:
 
-          sudo apt install insserv avahi-daemon
+         sudo nano /etc/apt/sources.list.d/raspi.list
     
-      Network Options > Hostname -> ```remoffice```
+    Run ```sudo apt update``` right after the change.
 
-          sudo insserv avahi-daemon
-
-          sudo /etc/init.d/avahi-daemon restart
-
- 4. Get *Blackbox IP*:
-
-        ip addr
-
- 5. SSH into Pi:
-
-        ssh pi@<Blackbox IP>
-
-    - Default password is ```raspberry```
-
- 5. Setup relay switching support:
-
-        sudo nano /etc/modules
-
-    - Add the following lines:
-
-          i2c-bcm2708 
-          i2c-dev
-
-    - Make device writable:
-
-          sudo chmod o+rw /dev/i2c*
-
- 7. Configure autostart on boot for Remoffice Server by appending script to ```~/.bashrc```:
- 
-        nano ~/.bashrc
-
-  >     if [[ "$(tty)" == "/dev/tty1" ]]; then
-  >       clear && cd remoffice-server && node index.js &
-  >     fi
-
- 8. Install Node v8:
-    
-        curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-        
-        sudo apt install -y nodejs
-
- 9. Setup blackbox-specific tools:
-     
-         # install pslist package because we need rkill
-         sudo apt install pslist
-     
- 10. Build and attach Remoffice Client:
-     
-     (Skip this step if you want to run in server-only mode. You must build and use external [Remoffice Client](https://github.com/r3dh4r7/remoffice-client) instance(s) to interact with the server.)
+ 5. Install dependencies:
      
          # install Git CLI
          sudo apt install git
+         
+         # install pslist package because we need rkill
+         sudo apt install pslist
+
+         # install Node v8
+         curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+         sudo apt install -y nodejs
+     
+ 6. Build Remoffice Client:
+     
+     (Skip this step if you want to run in server-only mode. You must build and use external [Remoffice Client](https://git.dualsight.io/r3dh4r7/remoffice-client) instance(s) to interact with the server.)
 
          # grab the latest version of Remoffice Client
-         git clone https://github.com/r3dh4r7/remoffice-client
+         git clone https://git.dualsight.io/r3dh4r7/remoffice-client
 
          # navigate to Remoffice Client root
          cd remoffice-client
@@ -98,20 +76,29 @@
          # exit Remoffice Client root
          cd ../
 
- 11. Fetch and bootstrap Remoffice Server:
+ 7. Fetch and bootstrap Remoffice Server:
      
          # grab the latest version of Remoffice Server
-         git clone https://github.com/r3dh4r7/remoffice-server
+         git clone https://git.dualsight.io/r3dh4r7/remoffice-server
 
          # navigate to Remoffice Server root
          cd remoffice-server
          
          # install dependencies
          npm install
+      *** Installation might span a couple of minutes since some libraries would be built from source.
 
- 12. Restart OS:
+ 8. Configure autostart on boot for Remoffice Server by appending script to ```~/.bashrc```:
+ 
+         nano ~/.bashrc
+
+    >     if [[ "$(tty)" == "/dev/tty1" ]]; then
+    >       clear && cd remoffice-server && node index.js &
+    >     fi
+
+ 9. Restart OS:
      
-         sudo shutdown -r now
+         sudo reboot
 
 
 ### Configuring the server
