@@ -1,15 +1,18 @@
 # Remoffice Server
 
 * [Introduction](#introduction)
+  * [Screenshot](#screenshot)
   * [Features](#features)
 * [Setup Guide](#setup-guide)
   * [Raspberry Pi 3](#raspberry-pi-3)
 
 ## Introduction
 
-![[Remoffice Server]](./resources/screenshots/remoffice-server.png)
-
 Remoffice Server is a multi-featured all-in-one Internet of Things (IoT) and remote control suite. It is designed with a standalone [client](https://git.dualsight.io/r3dh4r7/remoffice-client) that makes it fast and painless to deploy and remotely control connected infrastructure.
+
+### Screenshot
+
+![[Remoffice Server]](./resources/screenshots/remoffice-server.png)
 
 ### Features
 Remoffice Server is developed in a flexible fashion, such that it can be adapted to anyone's taste. Its feature base is modular and can be altered for additions or stripdowns. It comes with an authentication system - suitable for enterprise setups where there are limitations to user privileges and prevention of unauthorised access to attached infrastructure.
@@ -129,7 +132,7 @@ The following features are pre-loaded in the Raspberry Pi 3 driver:
          sudo reboot
 
 
-### Configuring the server
+## Configuring the server
 
 The server configuration is housed in the ```.env``` file.
 
@@ -152,7 +155,7 @@ The server configuration is housed in the ```.env``` file.
 | STORAGE_PORT | Port for storage server module. | 8089 |
 
 
-### Connecting to the Server
+## Connecting to the Server
 
 The server runs on port 8088 and by default can be accessed from any JavaScript-enabled web browser on any device exposed to the network that houses the server. This can be configured to your preference.
 
@@ -163,24 +166,24 @@ Of course the server can also be accessed by hostname. If you did set the hostna
 See [Remoffice Client](https://git.dualsight.io/r3dh4r7/remoffice-client) documentation for more details on how to connect to Remoffice Server.
 
 
-### Customising the server
+## Customising the server
 
-#### Modifying/Extending Rooms, Switches, Cams, etc.
+### Modifying/Extending Rooms, Switches, Cams, etc.
 
 For example, *./database/raspberry-pi-3/storage/index.sqlite* houses the database content for the Raspberry Pi 3 driver. You can use a tool like [SQLiteStudio](https://sqlitestudio.pl) to mutate the database.
 
-#### Managing Central Storage
+### Managing Shared Storage
 
-By default, *./blackbox/< configured blackbox >/storage* is mounted as Central Storage root. You can symlink an external file source to a sub-directory here.
+By default, *./blackbox/< configured blackbox >/storage* is mounted as Blackbox Storage root. You can symlink external disks/file sources to sub-directories here.
 
-Eample: symlinking an external hard drive
+Eample: symlinking an external hard disk
 
     crontab -e
 
 >     sudo mount -o rw /dev/sdb1 /home/pi/remoffice-server/blackbox/raspberry-pi-3/storage/usb1```
 
-#### Custom Blackbox Drivers
+### Custom Blackbox Drivers
 You can write a custom blackbox driver (for Odroid C2, Raspberry Pi 2, etc.) following a similar structure to *./blackbox/raspberry-pi-3* and extending the prototype class ```Blackbox``` in *./blackbox/_prototype/driver/index.js*
 
-#### Custom Database Drivers
+### Custom Database Drivers
 You can write a custom database driver (e.g. MySQL, MongoDB, etc) following a similar structure to *./database/raspberry-pi-3*
