@@ -1,10 +1,34 @@
 # Remoffice Server
 
+<br />
+
+## Table of Contents
+
 * [Introduction](#introduction)
+
   * [Screenshot](#screenshot)
+  
   * [Features](#features)
+
 * [Setup Guide](#setup-guide)
+
   * [Raspberry Pi 3](#raspberry-pi-3)
+
+* [Configuring to the Server](#configuring-the-server)
+
+* [Connecting to the Server](#connecting-to-the-server)
+
+* [Customising the server](#customising-the-server)
+
+  * [Modifying/Extending Rooms, Switches, Cams, etc.](#modifyingextending-rooms-switches-cams-etc)
+
+  * [Managing Shared Storage](#managing-shared-storage)
+
+  * [Custom Blackbox Drivers](#custom-blackbox-drivers)
+
+  * [Custom Database Drivers](#custom-database-drivers)
+
+<br />
 
 ## Introduction
 
@@ -22,6 +46,7 @@ The following features are pre-loaded in the Raspberry Pi 3 driver:
   - In-browser file sharing.
   - Surveillance - polls IP cams for live feed.
 
+<br />
 
 ## Setup Guide
 
@@ -131,6 +156,7 @@ The following features are pre-loaded in the Raspberry Pi 3 driver:
      
          sudo reboot
 
+<br />
 
 ## Configuring the server
 
@@ -154,6 +180,7 @@ The server configuration is housed in the ```.env``` file.
 |STORAGE_HOST|Host for storage server module.|0.0.0.0|
 |STORAGE_PORT|Port for storage server module.|8089|
 
+<br />
 
 ## Connecting to the Server
 
@@ -165,6 +192,7 @@ Of course the server can also be accessed by hostname. If you did set the hostna
 
 See [Remoffice Client](https://git.dualsight.io/r3dh4r7/remoffice-client) documentation for more details on how to connect to Remoffice Server.
 
+<br />
 
 ## Customising the server
 
