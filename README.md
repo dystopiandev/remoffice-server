@@ -7,11 +7,11 @@
 * [Introduction](#introduction)
 
   * [Screenshot](#screenshot)
-  
+
   * [Features](#features)
 
 * [Setup Guide](#setup-guide)
-
+  
   * [Raspberry Pi 3](#raspberry-pi-3)
 
 * [Configuring to the Server](#configuring-the-server)
