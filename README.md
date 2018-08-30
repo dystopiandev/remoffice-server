@@ -152,7 +152,7 @@ The following features are pre-loaded in the Raspberry Pi 3 driver:
 The server configuration is housed in the ```.env``` file.
 
 
-|Config|Default|Description|
+|Config|Default&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|Description|
 |-----|-----|-----|
 |APP_NAME|Remoffice Server|The server will be identified in logs and by clients with this name.|
 |SESSION_KEY|secret|A secret string that will be used by hashing functions.|
