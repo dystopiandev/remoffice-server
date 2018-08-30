@@ -152,22 +152,22 @@ The following features are pre-loaded in the Raspberry Pi 3 driver:
 The server configuration is housed in the ```.env``` file.
 
 
-|Config|Description|Default|
+|Config|Default|Description|
 |-----|-----|-----|
-|APP_NAME|The server will be identified in logs and by clients with this name.|Remoffice Server|
-|SESSION_KEY|A secret string that will be used by hashing functions.|secret|
-|SESSION_AUTH_TIMEOUT|Specifies how long (in seconds) the server will wait for a client to authenticate with valid user credentials before disconnecting the client.|10|
-|SESSION_LIFETIME|Specifies how long (in seconds) tokens issued by the server will be valid.|86440|
-|ENABLE_CLIENT_NOTIFICATIONS|Toggles notifications for connected clients.|1|
-|ENABLE_SERVER_LOGS|Toggles loffing to console instance from where Remoffice was launched.|1|
-|ENABLE_BLACKBOX_BROADCAST|Whether or not to reveal details about the blackbox.|1|
-|CLIENT_PATH|Specifies a path to a built Remoffice Client bundle.|../remoffice-client/dist|
-|SERVER_HOST|Host for HTTP and socket server modules.|0.0.0.0|
-|SERVER_PORT|Mount port for server.|8088|
-|BLACKBOX_DRIVER|Specifies which blackbox drivers to load, based on hardware and database choices.|(empty)|
-|BLACKBOX_LOCATION|A description of the blackbox's physical location in the building (useful for enterprise locations)|Planet Mars|
-|STORAGE_HOST|Host for storage server module.|0.0.0.0|
-|STORAGE_PORT|Port for storage server module.|8089|
+|APP_NAME|Remoffice Server|The server will be identified in logs and by clients with this name.|
+|SESSION_KEY|secret|A secret string that will be used by hashing functions.|
+|SESSION_AUTH_TIMEOUT|10|Specifies how long (in seconds) the server will wait for a client to authenticate with valid user credentials before disconnecting the client.|
+|SESSION_LIFETIME|86440|Specifies how long (in seconds) tokens issued by the server will be valid.|
+|ENABLE_CLIENT_NOTIFICATIONS|1|Toggles notifications for connected clients.|
+|ENABLE_SERVER_LOGS|1|Toggles loffing to console instance from where Remoffice was launched.|
+|ENABLE_BLACKBOX_BROADCAST|1|Whether or not to reveal details about the blackbox.|
+|CLIENT_PATH|../remoffice-client/dist|Specifies a path to a built Remoffice Client bundle.|
+|SERVER_HOST|0.0.0.0|Host for HTTP and socket server modules.|
+|SERVER_PORT|8088|Mount port for server.|
+|BLACKBOX_DRIVER|(blank)|Specifies which blackbox drivers to load, based on hardware and database choices.|
+|BLACKBOX_LOCATION|Planet Mars|A description of the blackbox's physical location in the building (useful for enterprise locations)|
+|STORAGE_HOST|0.0.0.0|Host for storage server module.|0.0.0.0|
+|STORAGE_PORT|8089|Port for storage server module.|8089|
 
 <br />
 
