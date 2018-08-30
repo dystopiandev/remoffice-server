@@ -1,13 +1,14 @@
 # Remoffice Server
 
-![](./resources/screenshots/remoffice-server.png)
-
 * [Introduction](#introduction)
   * [Features](#features)
 * [Setup Guide](#setup-guide)
   * [Raspberry Pi 3](#raspberry-pi-3)
 
 ## Introduction
+
+![[Remoffice Server]](./resources/screenshots/remoffice-server.png)
+
 Remoffice Server is a multi-featured all-in-one Internet of Things (IoT) and remote control suite. It is designed with a standalone [client](https://git.dualsight.io/r3dh4r7/remoffice-client) that makes it fast and painless to deploy and remotely control connected infrastructure.
 
 ### Features
