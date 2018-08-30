@@ -5,27 +5,16 @@
 ## Table of Contents
 
 * [Introduction](#introduction)
-
   * [Screenshot](#screenshot)
-
   * [Features](#features)
-
 * [Setup Guide](#setup-guide)
-  
   * [Raspberry Pi 3](#raspberry-pi-3)
-
 * [Configuring to the Server](#configuring-the-server)
-
 * [Connecting to the Server](#connecting-to-the-server)
-
 * [Customising the server](#customising-the-server)
-
   * [Modifying/Extending Rooms, Switches, Cams, etc.](#modifyingextending-rooms-switches-cams-etc)
-
   * [Managing Shared Storage](#managing-shared-storage)
-
   * [Custom Blackbox Drivers](#custom-blackbox-drivers)
-
   * [Custom Database Drivers](#custom-database-drivers)
 
 <br />
