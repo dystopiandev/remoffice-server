@@ -1,5 +1,5 @@
 const exec = require('child_process').exec
-const appConfig = require('../../../config')
+const appConfig = require('../../../lib/config')
 const db = require('../../../lib/db')
 const server = require('../../../lib/server')
 const clients = require('../../../lib/clients')

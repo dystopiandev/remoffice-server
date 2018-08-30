@@ -1,7 +1,7 @@
-const appConfig = require('../../../config')
+const appConfig = require('../../../lib/config')
 const exec = require('child_process').exec
 const i2c = require('i2c')
-const wire = new i2c(appConfig.switchController.address, {device: appConfig.switchController.device})
+const wire = new i2c(0x8, {device: '/dev/i2c-1'})
 const Blackbox = require('../../_prototype/driver')
 const db = require('../../../lib/db')
 const server = require('../../../lib/server')
@@ -24,6 +24,7 @@ class RaspberryPi3 extends Blackbox {
       server: {
         name: appConfig.name,
         version: serverVersion,
+        onlineUsers: 0,
         clientCount: 0
       },
       servlets: {

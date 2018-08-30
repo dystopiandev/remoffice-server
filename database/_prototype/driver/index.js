@@ -1,5 +1,5 @@
 const sqlite = require('sqlite')
-const appConfig = require('../../../config')
+const appConfig = require('../../../lib/config')
 
 class Database {
   constructor () {

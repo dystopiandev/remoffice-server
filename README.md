@@ -1,10 +1,27 @@
 # Remoffice Server
 
-> A server for IoT automations.
+![](./resources/screenshots/remoffice-server.png)
+
+* [Introduction](#introduction)
+  * [Features](#features)
+* [Setup Guide](#setup-guide)
+  * [Raspberry Pi 3](#raspberry-pi-3)
+
+## Introduction
+Remoffice Server is a multi-featured all-in-one Internet of Things (IoT) and remote control suite. It is designed with a standalone [client](https://git.dualsight.io/r3dh4r7/remoffice-client) that makes it fast and painless to deploy and remotely control connected infrastructure.
+
+### Features
+Remoffice Server is developed in a flexible fashion, such that it can be adapted to anyone's taste. Its feature base is modular and can be altered for additions or stripdowns. It comes with an authentication system - suitable for enterprise setups where there are limitations to user privileges and prevention of unauthorised access to attached infrastructure.
+
+The following features are pre-loaded in the Raspberry Pi 3 driver:
+  - Power manager (remote toggling of switches) - this requires an Arduino UNO R3 (I/O slave)
+  - In-browser file sharing.
+  - Surveillance - polls IP cams for live feed.
+
 
 ## Setup Guide
 
-### Preparing the server (Raspberry Pi 3 procedure)
+### Raspberry Pi 3
 
  1. Write Raspbian Stretch image to boot medium, create an empty file called ```ssh``` in the boot partition. Also, if you're to use Wi-Fi, create a file called ```wpa_supplicant.conf``` in the same directory with the following content:
 
@@ -23,7 +40,7 @@
 		ssh pi@raspberrypi
 
     - Default password is ```raspberry```
-    - ```raspberrypi``` should be replaced with the real IP address if you can extract it from your router or ```ip addr``` command if the Pi is plugged into a monitor.
+    - ```raspberrypi``` should be replaced with the real IP address if you can extract it from your router or ```ip addr``` command if the Pi is connected to a monitor and keyboard.
 
  3. Launch Pi config tool:
 
@@ -45,7 +62,7 @@
     
     Run ```sudo apt update``` right after the change.
 
- 5. Install dependencies:
+ 5. Install dependencies and get ready:
      
          # install Git CLI
          sudo apt install git
@@ -56,6 +73,9 @@
          # install Node v8
          curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
          sudo apt install -y nodejs
+
+         # ensure you're in user home
+         cd ~
      
  6. Build Remoffice Client:
      
@@ -96,88 +116,63 @@
     >       clear && cd remoffice-server && node index.js &
     >     fi
 
- 9. Restart OS:
+ 9. Configure Remoffice Server:
+     
+         cp ~/remoffice-server/.env.example ~/remoffice-server/.env
+         nano ~/remoffice-server/.env
+      
+      Ensure that ```BLACKBOX_DRIVER``` is set to ```raspberry-pi-3``` and see [below](#configuring-the-server) for further configuration details.
+
+ 10. Restart OS:
      
          sudo reboot
 
 
 ### Configuring the server
 
-The server configuration file is ```remoffice-server/config/index.js```
+The server configuration is housed in the ```.env``` file.
 
-Default config:
 
-```javascript
-{
-  // Server name
-  name: 'Remoffice Server',
-
-  // Server verbosity
-  enableLogs: true,
-
-  // Client verbosity
-  enableNotifications: true,
-
-  // Database driver
-  dbDriver: 'sqlite',
-
-  // Blackbox config
-  blackbox: {
-    driver:  'raspberry-pi-3', // leave empty for emulation
-    location: 'Computer Laboratory',
-    exposeToClients: true
-  },
-  
-  // Web socket interface
-  socket: {
-    host: '0.0.0.0',
-    port: '8088'
-  },
-
-  // Database config
-  db: {
-    // SQLite
-    sqlite: {
-      index: 'database/sqlite/storage/index.sqlite'
-    }
-  },
-
-  // Internal client build dir
-   client: {
-    buildDir: '../remoffice-client/dist'  // leave empty for server-only mode
-  },
-  
-  // Storage server config
-  storage: {
-    host: '0.0.0.0',
-    port: '8089'
-  }
-}
-```
+| Config | Description | Default |
+|--|--|--|
+| APP_NAME | The server will be identified in logs and by clients with this name. | Remoffice Server |
+| SESSION_KEY | A secret string that will be used by hashing functions. | secret |
+| SESSION_AUTH_TIMEOUT | Specifies how long (in seconds) the server will wait for a client to authenticate with valid user credentials before disconnecting the client. | 10 |
+| SESSION_LIFETIME | Specifies how long (in seconds) tokens issued by the server will be valid. | 86440 |
+| ENABLE_CLIENT_NOTIFICATIONS | Toggles notifications for connected clients. | 1 |
+| ENABLE_SERVER_LOGS | Toggles loffing to console instance from where Remoffice was launched. | 1 |
+| ENABLE_BLACKBOX_BROADCAST | Whether or not to reveal details about the blackbox. | 1 |
+| CLIENT_PATH | Specifies a path to a built Remoffice Client bundle. | ../remoffice-client/dist |
+| SERVER_HOST | Host for HTTP and socket server modules. | 0.0.0.0 |
+| SERVER_PORT | Mount port for server. | 8088 |
+| BLACKBOX_DRIVER | Specifies which blackbox drivers to load, based on hardware and database choices. | (empty) |
+| BLACKBOX_LOCATION | A description of the blackbox's physical location in the building (useful for enterprise locations) | Planet Mars |
+| STORAGE_HOST | Host for storage server module. | 0.0.0.0 |
+| STORAGE_PORT | Port for storage server module. | 8089 |
 
 
 ### Connecting to the Server
 
-The server runs on port 8088 and can be accessed from any Remoffice Client exposed the network by default.
+The server runs on port 8088 and by default can be accessed from any JavaScript-enabled web browser on any device exposed to the network that houses the server. This can be configured to your preference.
 
-Note that if you setup Remoffice Server in server-only mode, you will not be served any content when you visit http://*< Blackbox IP >*:8088 but you can configure an external Remoffice Client to connect to the blackbox's IP address with the configured port.
+Note that if you setup Remoffice Server in server-only mode, you will not be served any content when you visit http://*< Server IP >*:8088 but you can configure an external Remoffice Client to connect to the blackbox's IP address with the configured port.
 
-Of course the server can also be accessed by hostname as "remoffice" if configured by the local network router or "remoffice.local" if you configure
+Of course the server can also be accessed by hostname. If you did set the hostname to "remoffice" as instructed above, then your server should be accessible via ```remoffice:8088``` on any Remoffice Client instance.
 
-Configure it to work as you want by editing the configuration file below.
+See [Remoffice Client](https://git.dualsight.io/r3dh4r7/remoffice-client) documentation for more details on how to connect to Remoffice Server.
 
 
 ### Customising the server
 
 #### Modifying/Extending Rooms, Switches, Cams, etc.
 
-By default, *./database/sqlite/storage/index.sqlite* houses the database content. You can use a tool like [SQLiteStudio](https://sqlitestudio.pl) to mutate the database.
+For example, *./database/raspberry-pi-3/storage/index.sqlite* houses the database content for the Raspberry Pi 3 driver. You can use a tool like [SQLiteStudio](https://sqlitestudio.pl) to mutate the database.
 
 #### Managing Central Storage
 
 By default, *./blackbox/< configured blackbox >/storage* is mounted as Central Storage root. You can symlink an external file source to a sub-directory here.
 
-Eample: symlinkinking an external hard drive
+Eample: symlinking an external hard drive
 
     crontab -e
 
@@ -187,4 +182,4 @@ Eample: symlinkinking an external hard drive
 You can write a custom blackbox driver (for Odroid C2, Raspberry Pi 2, etc.) following a similar structure to *./blackbox/raspberry-pi-3* and extending the prototype class ```Blackbox``` in *./blackbox/_prototype/driver/index.js*
 
 #### Custom Database Drivers
-You can write a custom database driver (e.g. MySQL, MongoDB, etc) following a similar structure to *./database/sqlite*
+You can write a custom database driver (e.g. MySQL, MongoDB, etc) following a similar structure to *./database/raspberry-pi-3*

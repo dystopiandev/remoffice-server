@@ -1,4 +1,4 @@
-const appConfig = require('./config')
+const appConfig = require('./lib/config')
 const blackbox = require('./lib/blackbox')
 const log = require('./lib/log')
 const notify = require('./lib/notify')
@@ -7,6 +7,7 @@ const server = require('./lib/server')
 const ipAddresses = require('./lib/ipAddresses')
 const serverVersion = require('./lib/serverVersion')
 const jwt = require('jsonwebtoken')
+let onlineUsers = new Set()
 
 // kick-off
 log.inverted('', appConfig.name, serverVersion, '\n')
@@ -54,6 +55,10 @@ blackbox.db.connect()
             // increase client count
             blackbox.runtimeData.server.clientCount++
 
+            // track user
+            onlineUsers.add(user.id)
+            blackbox.runtimeData.server.onlineUsers = onlineUsers.size
+
             // broadcast server data to client at regular intervals
             setInterval(() => {
               clientSocket.emit('serverData', blackbox.runtimeData)
@@ -75,10 +80,14 @@ blackbox.db.connect()
 
               // wave goodbye to all online users
               notify.info(server, userTag, 'Disconnected', 3000)
-            }
 
-            // decrease client count
-            blackbox.runtimeData.server.clientCount--
+              // decrease client count
+              blackbox.runtimeData.server.clientCount--
+
+              // let go of offline user ID
+              onlineUsers.delete(user.id)
+              blackbox.runtimeData.server.onlineUsers  = onlineUsers.size
+            }
           },
           // set auth timeout
           timeout: appConfig.sessions.authTimeout
