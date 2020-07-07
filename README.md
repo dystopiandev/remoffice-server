@@ -21,7 +21,7 @@
 
 ## Introduction
 
-Remoffice Server is a multi-featured all-in-one Internet of Things (IoT) and remote control suite. It is designed with a standalone [client](https://git.dualsight.io/r3dh4r7/remoffice-client) that makes it fast and painless to deploy and remotely control connected infrastructure.
+Remoffice Server is a multi-featured all-in-one Internet of Things (IoT) and remote control suite. It is designed with a standalone [client](https://git.dualsight.io/dystopiandev/remoffice-client) that makes it fast and painless to deploy and remotely control connected infrastructure.
 
 ### Screenshot
 
