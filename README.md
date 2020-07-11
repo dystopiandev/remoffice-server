@@ -21,7 +21,7 @@
 
 ## Introduction
 
-Remoffice Server is a multi-featured all-in-one Internet of Things (IoT) and remote control suite. It is designed with a standalone [client](https://git.dualsight.io/dystopiandev/remoffice-client) that makes it fast and painless to deploy and remotely control connected infrastructure.
+Remoffice Server is a multi-featured all-in-one Internet of Things (IoT) and remote control suite. It is designed with a standalone [client](https://github.com/dystopiandev/remoffice-client) that makes it fast and painless to deploy and remotely control connected infrastructure.
 
 ### Screenshot
 
@@ -100,7 +100,7 @@ The following features are pre-loaded in the Raspberry Pi 3 driver:
      (Skip this step if you want to run in server-only mode. You must build and use external [Remoffice Client](https://git.dualsight.io/dystopiandev/remoffice-client) instance(s) to interact with the server.)
 
          # grab the latest version of Remoffice Client
-         git clone https://git.dualsight.io/dystopiandev/remoffice-client
+         git clone https://github.com/dystopiandev/remoffice-client
 
          # navigate to Remoffice Client root
          cd remoffice-client
@@ -117,7 +117,7 @@ The following features are pre-loaded in the Raspberry Pi 3 driver:
  7. Fetch and bootstrap Remoffice Server:
      
          # grab the latest version of Remoffice Server
-         git clone https://git.dualsight.io/dystopiandev/remoffice-server
+         git clone https://github.com/dystopiandev/remoffice-server
 
          # navigate to Remoffice Server root
          cd remoffice-server
@@ -179,7 +179,7 @@ Note that if you setup Remoffice Server in server-only mode, you will not be ser
 
 Of course the server can also be accessed by hostname. If you did set the hostname to "remoffice" as instructed above, then your server should be accessible via ```remoffice:8088``` on any Remoffice Client instance.
 
-See [Remoffice Client](https://git.dualsight.io/dystopiandev/remoffice-client) documentation for more details on how to connect to Remoffice Server.
+See [Remoffice Client](https://github.com/dystopiandev/remoffice-client) documentation for more details on how to connect to Remoffice Server.
 
 <br />
 
