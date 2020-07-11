@@ -97,7 +97,7 @@ The following features are pre-loaded in the Raspberry Pi 3 driver:
      
  6. Build Remoffice Client:
      
-     (Skip this step if you want to run in server-only mode. You must build and use external [Remoffice Client](https://git.dualsight.io/dystopiandev/remoffice-client) instance(s) to interact with the server.)
+     (Skip this step if you want to run in server-only mode. You must build and use external [Remoffice Client](https://github.com/dystopiandev/remoffice-client) instance(s) to interact with the server.)
 
          # grab the latest version of Remoffice Client
          git clone https://github.com/dystopiandev/remoffice-client
