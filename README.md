@@ -4,18 +4,21 @@
 
 ## Table of Contents
 
-* [Introduction](#introduction)
-  * [Screenshot](#screenshot)
-  * [Features](#features)
-* [Setup Guide](#setup-guide)
-  * [Raspberry Pi 3](#raspberry-pi-3)
-* [Configuring to the Server](#configuring-the-server)
-* [Connecting to the Server](#connecting-to-the-server)
-* [Customising the server](#customising-the-server)
-  * [Modifying/Extending Rooms, Switches, Cams, etc.](#modifyingextending-rooms-switches-cams-etc)
-  * [Managing Shared Storage](#managing-shared-storage)
-  * [Custom Blackbox Drivers](#custom-blackbox-drivers)
-  * [Custom Database Drivers](#custom-database-drivers)
+- [Table of Contents](#table-of-contents)
+- [Introduction](#introduction)
+  - [Demo](#demo)
+    - [Server screenshot:](#server-screenshot)
+    - [Sample blackbox setup:](#sample-blackbox-setup)
+  - [Features](#features)
+- [Setup Guide](#setup-guide)
+  - [Raspberry Pi 3](#raspberry-pi-3)
+- [Configuring the server](#configuring-the-server)
+- [Connecting to the Server](#connecting-to-the-server)
+- [Customising the server](#customising-the-server)
+  - [Modifying/Extending Rooms, Switches, Cams, etc.](#modifyingextending-rooms-switches-cams-etc)
+  - [Managing Shared Storage](#managing-shared-storage)
+  - [Custom Blackbox Drivers](#custom-blackbox-drivers)
+  - [Custom Database Drivers](#custom-database-drivers)
 
 <br />
 
@@ -23,9 +26,28 @@
 
 Remoffice Server is a multi-featured all-in-one Internet of Things (IoT) and remote control suite. It is designed with a standalone [client](https://github.com/dystopiandev/remoffice-client) that makes it fast and painless to deploy and remotely control connected infrastructure.
 
-### Screenshot
+### Demo
 
+See Remoffice in action in [this Youtube video](https://youtu.be/MsgreiGZk50).
+
+<br />
+
+#### Server screenshot:
 ![[Remoffice Server]](./resources/screenshots/remoffice-server.png)
+
+
+<br />
+
+#### Sample blackbox setup:
+<table>
+  <tr>
+    <td valign="top"><img src="./resources/screenshots/blackbox-1.jpg"></td>
+    <td valign="top"><img src="./resources/screenshots/blackbox-2.jpg"></td>
+  </tr>
+ </table>
+
+
+<br />
 
 ### Features
 Remoffice Server is developed in a flexible fashion, such that it can be adapted to anyone's taste. Its feature base is modular and can be altered for additions or stripdowns. It comes with an authentication system - suitable for enterprise setups where there are limitations to user privileges and prevention of unauthorised access to attached infrastructure.
@@ -152,22 +174,22 @@ The following features are pre-loaded in the Raspberry Pi 3 driver:
 The server configuration is housed in the ```.env``` file.
 
 
-|Config|Default&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|Description|
-|-----|-----|-----|
-|APP_NAME|Remoffice Server|The server will be identified in logs and by clients with this name.|
-|SESSION_KEY|secret|A secret string that will be used by hashing functions.|
-|SESSION_AUTH_TIMEOUT|10|Specifies how long (in seconds) the server will wait for a client to authenticate with valid user credentials before disconnecting the client.|
-|SESSION_LIFETIME|86440|Specifies how long (in seconds) tokens issued by the server will be valid.|
-|ENABLE_CLIENT_NOTIFICATIONS|1|Toggles notifications for connected clients.|
-|ENABLE_SERVER_LOGS|1|Toggles loffing to console instance from where Remoffice was launched.|
-|ENABLE_BLACKBOX_BROADCAST|1|Whether or not to reveal details about the blackbox.|
-|CLIENT_PATH|../remoffice-client/dist|Specifies a path to a built Remoffice Client bundle.|
-|SERVER_HOST|0.0.0.0|Host for HTTP and socket server modules.|
-|SERVER_PORT|8088|Mount port for server.|
-|BLACKBOX_DRIVER|(blank)|Specifies which blackbox drivers to load, based on hardware and database choices.|
-|BLACKBOX_LOCATION|Planet Mars|A description of the blackbox's physical location in the building (useful for enterprise locations)|
-|STORAGE_HOST|0.0.0.0|Host for storage server module.|0.0.0.0|
-|STORAGE_PORT|8089|Port for storage server module.|8089|
+| Config                      | Default&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Description                                                                                                                                    |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| APP_NAME                    | Remoffice Server                                                                                                                                        | The server will be identified in logs and by clients with this name.                                                                           |
+| SESSION_KEY                 | secret                                                                                                                                                  | A secret string that will be used by hashing functions.                                                                                        |
+| SESSION_AUTH_TIMEOUT        | 10                                                                                                                                                      | Specifies how long (in seconds) the server will wait for a client to authenticate with valid user credentials before disconnecting the client. |
+| SESSION_LIFETIME            | 86440                                                                                                                                                   | Specifies how long (in seconds) tokens issued by the server will be valid.                                                                     |
+| ENABLE_CLIENT_NOTIFICATIONS | 1                                                                                                                                                       | Toggles notifications for connected clients.                                                                                                   |
+| ENABLE_SERVER_LOGS          | 1                                                                                                                                                       | Toggles loffing to console instance from where Remoffice was launched.                                                                         |
+| ENABLE_BLACKBOX_BROADCAST   | 1                                                                                                                                                       | Whether or not to reveal details about the blackbox.                                                                                           |
+| CLIENT_PATH                 | ../remoffice-client/dist                                                                                                                                | Specifies a path to a built Remoffice Client bundle.                                                                                           |
+| SERVER_HOST                 | 0.0.0.0                                                                                                                                                 | Host for HTTP and socket server modules.                                                                                                       |
+| SERVER_PORT                 | 8088                                                                                                                                                    | Mount port for server.                                                                                                                         |
+| BLACKBOX_DRIVER             | (blank)                                                                                                                                                 | Specifies which blackbox drivers to load, based on hardware and database choices.                                                              |
+| BLACKBOX_LOCATION           | Planet Mars                                                                                                                                             | A description of the blackbox's physical location in the building (useful for enterprise locations)                                            |
+| STORAGE_HOST                | 0.0.0.0                                                                                                                                                 | Host for storage server module.                                                                                                                | 0.0.0.0 |
+| STORAGE_PORT                | 8089                                                                                                                                                    | Port for storage server module.                                                                                                                | 8089    |
 
 <br />
 
